@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
+
 import requests as r
-import re
 import json
 import sys
 
@@ -11,11 +12,11 @@ if len(sys.argv) < 2:
 elif len(sys.argv) < 3:
     exit("Aur Output Path :|")
 
-
+user = str(popen("whoami").read()).strip("\n")
 file_path = sys.argv[1]
 save = sys.argv[2]
 
-config = json.loads(open("./config.json","r").read())
+config = json.loads(open(f"/home/{user}/.transferpi/config.json","r").read())
 chunk_size = 20480
 getmd5 = lambda x:popen(f"md5sum {x}").readlines()[0].split(" ")[0]
 
