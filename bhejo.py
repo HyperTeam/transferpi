@@ -1,6 +1,6 @@
 from flask import Flask,request,send_from_directory,jsonify,send_file
 from flask_cors import CORS
-from os import popen
+from os import popen,path
 from json import loads
 from sys import argv
 
@@ -14,11 +14,14 @@ root = config['root_dir']
 getMD5 = lambda x:popen(f"md5sum {x}").readlines()[0].split(" ")[0]
 md5Checks = {}
 
+
 @app.route('/<path:file_path>')
 def get_file(file_path):
     file_path = f"{root}/{file_path}"
-    md5Checks[file_path] = getMD5(file_path)
-    return send_file(f"{file_path}")
+    if path.exists(file_path):
+        md5Checks[file_path] = getMD5(file_path)
+        return send_file(f"{file_path}"),200
+    return f"File : {file_path} does not exist",201
 
 @app.route("/md5/<path:file_path>")
 def md5(file_path):

@@ -6,8 +6,8 @@ then
     echo "Installing Server"
     echo ""
     echo "Installing Dependencies"
-    # sudo apt install -y python3-pip
-    # pip3 install --upgrade flask flask_cors 
+    sudo apt install -y python3-pip
+    sudo -H pip3 install --upgrade flask flask_cors 
 
     echo "Create Config"
     echo ""
@@ -15,7 +15,7 @@ then
     read root_folder
     echo "Enter Port:"
     read port
-
+    mkdir -p /home/$user/.transferpi 
     echo "{" > config.json
     echo "\"root_dir\": \"$root_folder\"," >> config.json
     echo "\"port\": \"$port\"" >> config.json
@@ -34,8 +34,8 @@ then
     echo WantedBy=multi-user.target >> $service_file
  
     mkdir -p /home/$user/.transferpi
-    cp bhejo.py /home/$user/.transferpi/bhejo.py -a
-    cp bhejo.service /lib/systemd/system/bhejo.service -a
+    sudo cp bhejo.py /home/$user/.transferpi/bhejo.py -a
+    sudo mv bhejo.service /lib/systemd/system/bhejo.service 
     echo "Server Installied Successfully"
     echo "Starting Service"
     sudo service bhejo start

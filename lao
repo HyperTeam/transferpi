@@ -5,7 +5,7 @@ import json
 import sys
 
 from tqdm import tqdm
-from os import popen
+from os import popen,path
 
 if len(sys.argv) < 2:
     exit("Madarchod Path Kaun Dalega ?")
@@ -18,19 +18,34 @@ save = sys.argv[2]
 
 config = json.loads(open(f"/home/{user}/.transferpi/config.json","r").read())
 chunk_size = 20480
-getmd5 = lambda x:popen(f"md5sum {x}").readlines()[0].split(" ")[0]
+
+
+def check_md5(local,remote):
+    return popen(f"md5sum {local}").readlines()[0].split(" ")[0] == remote
 
 if __name__ == "__main__":
-    FILE = r.get(f"http://{config['address']}:{config['port']}/{file_path}", stream=True)
-    STEPS = int(FILE.headers['Content-Length']) // chunk_size
     MD5 = r.get(f"http://{config['address']}:{config['port']}/md5/{file_path}")
 
-    with open(f"{save}","wb+") as file:
-        for chunk in tqdm(FILE.iter_content(chunk_size=chunk_size),total=STEPS):
-            file.write(chunk)
+    if path.exists(save):
+        print (f"File {save} already exists, Checking MD5")
+        if check_md5(save,MD5.text):
+            print (f"File is same No Need To Download")
+            exit(1)
+        else:
+            print ("MD5 Doesn't match, Downloading The File'") 
 
-    if getmd5(save) == MD5.text:
-        print (f"File {save} Downloaded Successfully !")
+    FILE = r.get(f"http://{config['address']}:{config['port']}/{file_path}", stream=True)
+    if FILE.status_code == 200:
+        STEPS = int(FILE.headers['Content-Length']) // chunk_size
+        with open(f"{save}","wb+") as file:
+            for chunk in tqdm(FILE.iter_content(chunk_size=chunk_size),total=STEPS):
+                file.write(chunk)
+
+        if check_md5(save , MD5.text):
+            print (f"File {save} Downloaded Successfully !")
+        else:
+            popen(f"rm -rf {save}")
     else:
-        popen(f"rm -rf {save}")
+        print(str(FILE.content,encoding='utf8'))
+
 
