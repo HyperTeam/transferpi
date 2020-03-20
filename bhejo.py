@@ -1,11 +1,16 @@
 from flask import Flask,request,send_from_directory,jsonify,send_file
 from flask_cors import CORS
 from os import popen
+from json import loads
+from sys import argv
 
 app = Flask(__name__)
 CORS(app)
 
-root = "/home/dev-harsh1998"
+user = argv[1]
+config = loads(open(f"/home/{user}/.transferpi/config.json").read())
+
+root = config['root_dir']
 getMD5 = lambda x:popen(f"md5sum {x}").readlines()[0].split(" ")[0]
 md5Checks = {}
 
@@ -20,4 +25,4 @@ def md5(file_path):
     return md5Checks[f"{root}/{file_path}"]
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0",debug=True,port=2525,threaded=True)
+    app.run(host="0.0.0.0",debug=True,port=config['port'],threaded=True)

@@ -1,0 +1,9 @@
+[Unit]
+Description=Transfer PI Server.
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/codekage/.transferpi/bhejo.py codekage
+
+[Install]
+WantedBy=multi-user.target
